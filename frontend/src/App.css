@@ -33,14 +33,6 @@
   }
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
 /* Общие стили */
 body {
   font-family: Arial, sans-serif;
@@ -51,7 +43,7 @@ body {
 
 .task-tracker {
   padding: 1rem;
-  max-width: 800px;
+  /* max-width: 800px; */
   margin: 0 auto;
   background-color: #ffffff;
 }
@@ -67,8 +59,7 @@ body {
 .add-task-btn {
   font-size: 1.5rem;
   font-weight: bold;
-  background: #4caf50;
-  color: white;
+  color: black;
   border: none;
   border-radius: 4px;
   width: 40px;
@@ -78,40 +69,41 @@ body {
 }
 
 .sort-label {
-  font-size: 1rem;
-  color: #333;
+  font-size: 1.5rem;
+  color: black;
 }
 
-/* Список карточек задач */
 .task-card {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 0.2rem;
+  /* width: 800px; */
+  margin-bottom: 1rem;
 }
 
-/* Карточка задачи */
-.task-info {
-  display: flex;
-  flex-direction: column;
-  background-color: #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Шапка карточки */
 .task-header {
   background-color: #A2DC35;
-  color: white;
+  color: black;
   padding: 0.5rem;
   font-weight: bold;
   text-align: center;
 }
 
-/* Основная часть карточки */
+.task-id {
+  font-size: 1.2rem;
+}
+
+.task-info {
+  display: flex;
+  flex-direction: column;
+  background-color: #e0e0e0;
+  overflow: hidden;
+  position: relative;
+}
+
 .task-content {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   padding: 1rem;
 }
 
@@ -120,12 +112,17 @@ body {
   flex-direction: column;
   justify-content: space-between;
   text-align: left;
+  width: 50%;
+}
+
+.task-name {
+  font-size: 1.2rem;
 }
 
 .task-description {
-  margin-top: auto;
-  font-size: 0.9rem;
-  color: #666;
+  /* margin-top: 0.2rem; */
+  font-size: 1rem;
+  color: #000000;
 }
 
 .task-right {
@@ -133,25 +130,26 @@ body {
   flex-direction: column;
   justify-content: space-between;
   text-align: right;
+  width: 300px;
+}
+
+.task-deadline {
+  font-size: 1rem;
 }
 
 .task-status select {
-  margin-top: 0.2rem;
+  /* margin-top: 0.2rem; */
   padding: 0.3rem;
 }
 
-/* Блок с датами */
 .task-dates {
   display: flex;
   flex-direction: column;
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 1rem;
+  color: black;
   background-color: #dcdcdc;
   padding: 0.5rem;
-  border-radius: 8px;
-  text-align: right;
+  text-align: left;
   align-self: flex-start;
   margin-left: 1rem;
-  /* box-sizing: border-box; */
-  margin-top: -0.5rem; /* Поднимаем, чтобы визуально примыкал */
 }
