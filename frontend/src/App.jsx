@@ -12,8 +12,8 @@ function App() {
     <span class="sort-label">Сортировать по</span>
   </header>
 
-  <div class="task-list">
-    <div class="task-card">
+  <div class="task-card">
+    <div class="task-info">
       <div class="task-header">
         <p>ID 001</p>
       </div>
@@ -40,6 +40,7 @@ function App() {
       <p><strong>Обновлено:</strong> 11-09-2024</p>
     </div>
   </div>
+  
 </div>
 
     </>
