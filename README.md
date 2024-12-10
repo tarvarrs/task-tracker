@@ -4,12 +4,14 @@
 
 To run backend server:
 
-`cd backend`
-
-`npm run dev`
+```shell
+cd backend
+npm run dev
+```
 
 To run frontend server:
 
-`cd ../frontend`
-
-`npm run dev`
+```shell
+cd ../frontend
+npm run dev
+```
