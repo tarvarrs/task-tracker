@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
+import {normalizePriority} from './scripts/normalizePriority';
 
 function App() {
   const [tasks, setTasks] = useState([]); // Все задачи
@@ -49,6 +50,74 @@ function App() {
       });
   }
 
+  const handleSortTasks = (sortOption) => {
+    let sortParam = '';
+    switch (sortOption) {
+      case 'ID':
+        sortParam = 'id';
+        break;
+      case 'дате':
+        sortParam = 'deadline';
+        break;
+      case 'статусу':
+        sortParam = 'status';
+        break;
+      case 'приоритету':
+        sortParam = 'priority';
+        break;
+      default:
+        sortParam = 'id';
+    }
+    fetch(`http://localhost:4000/tasks/ordered_by_${sortParam}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch sorted tasks');
+        }
+        return response.json();
+      })
+      .then((sortedTasks) => {
+        setTasks(sortedTasks);
+      })
+      .catch((error) => {
+        console.error('Error fetching sorted tasks:', error);
+        alert('Не удалось загрузить отсорированные задачи');
+      });
+  };
+
+  const handleFilterTasks = (filterOption) => {
+    let filterParam = '';
+    switch (filterOption) {
+      case 'Все':
+        filterParam = 'all';
+        break;
+      case 'В ожидании':
+        filterParam = 'pending';
+        break;
+      case 'В процессе':
+        filterParam = 'process';
+        break;
+      case 'Выполнено':
+        filterParam = 'done';
+        break;
+      default:
+        filterParam = 'all';
+    }
+    fetch(`http://localhost:4000/tasks/filtered_${filterParam}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch filtered tasks');
+        }
+        return response.json();
+      })
+      .then((filteredTasks) => {
+        setTasks(filteredTasks);
+      })
+      .catch((error) => {
+        console.error('Error fetching filtered tasks', error);
+        alert('Не удалось загрузить задачи по фильтру');
+      });
+  };
+
   const handleStatusChange = (taskId, newStatus) => {
     fetch(`http://localhost:4000/tasks/${taskId}/status`, {
       method: 'PUT',
@@ -67,7 +136,7 @@ function App() {
         console.log(data.message);
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
-            task.id === taskId ? { ...task, status: newStatus} : task
+            task.id === taskId ? { ...task, status: newStatus, date_update: new Date().toISOString().slice(0, 10) } : task
       ));
       })
       .catch((error) => {
@@ -208,14 +277,28 @@ function App() {
           </div>
           <div className="sort-by">
             <label htmlFor="sort-1">Сортировать по </label>
-            <select id="sort-1">
+            <select 
+              id="sort-1"
+              onChange={(e) => handleSortTasks(e.target.value)}
+            >
               <option>ID</option>
               <option>дате</option>
               <option>статусу</option>
               <option>приоритету</option>
             </select>
           </div>
-          <span className="sort-label">Фильтр</span>
+          <div className="filter-priority">
+            <label htmlFor="sort-2">Статус </label>
+            <select 
+              id="sort-2"
+              onChange={(e) => handleFilterTasks(e.target.value)}
+            >
+              <option>Все</option>
+              <option>В ожидании</option>
+              <option>В процессе</option>
+              <option>Выполнено</option>
+            </select>
+          </div>
         </div>
       </header>
 
@@ -231,7 +314,7 @@ function App() {
               <div className="task-content">
                 <div className="task-left">
                   <p className="task-name">
-                    <strong>{searchResult.priority}</strong> {searchResult.task_name}
+                    <strong>{normalizePriority(searchResult.priority)}</strong> {searchResult.task_name}
                   </p>
                   <p className="task-description">{searchResult.description}</p>
                 </div>
@@ -276,7 +359,7 @@ function App() {
                 <div className="task-content">
                   <div className="task-left">
                     <p className="task-name">
-                      <strong>{task.priority}</strong> {task.task_name}
+                      <strong>{normalizePriority(task.priority)}</strong> {task.task_name}
                     </p>
                     <p className="task-description">{task.description}</p>
                   </div>

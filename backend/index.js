@@ -30,6 +30,88 @@ app.get('/tasks', (req, res) => {
   });
 });
 
+// API for task sorting
+app.get('/tasks/ordered_by_id', (req, res) => {
+  db.all('SELECT * FROM tasks ORDER BY id', (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.json(rows);
+  });
+});
+
+app.get('/tasks/ordered_by_deadline', (req, res) => {
+  db.all('SELECT * FROM tasks ORDER BY date_end', (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.json(rows);
+  });
+});
+
+app.get('/tasks/ordered_by_status', (req, res) => {
+  db.all('SELECT * FROM tasks ORDER BY status', (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.json(rows);
+  });
+});
+
+app.get('/tasks/ordered_by_priority', (req, res) => {
+  db.all('SELECT * FROM tasks ORDER BY priority', (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.json(rows);
+  });
+});
+
+// API for task filtering
+app.get('/tasks/filtered_all', (req, res) => {
+  db.all('SELECT * FROM tasks', (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.json(rows);
+  });
+});
+
+app.get('/tasks/filtered_pending', (req, res) => {
+  db.all('SELECT * FROM tasks WHERE status = "В ожидании"', (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.json(rows);
+  });
+});
+
+app.get('/tasks/filtered_process', (req, res) => {
+  db.all('SELECT * FROM tasks WHERE status = "В процессе"', (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.json(rows);
+  });
+});
+
+app.get('/tasks/filtered_done', (req, res) => {
+  db.all('SELECT * FROM tasks WHERE status = "Выполнено"', (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.json(rows);
+  });
+});
+
 // API for getting task by id
 app.get('/tasks/:id', (req, res) => {
   db.get('SELECT * FROM tasks WHERE id = ?', req.params.id, (err, row) => {
@@ -46,7 +128,7 @@ app.get('/tasks/:id', (req, res) => {
 
 // API for task status update
 app.put('/tasks/:id/status', (req, res) => {
-  const taskId = req.params.id;
+  const { id } = req.params;
   const { status } = req.body;
 
   if (!status) {
@@ -58,8 +140,10 @@ app.put('/tasks/:id/status', (req, res) => {
     return res.status(400).json({ message: 'Invalid status' });
   }
 
-  const sql = 'UPDATE tasks SET status = ? WHERE id = ?';
-  db.run(sql, [status, taskId], function (err) {
+  const dateUpdate = new Date().toISOString().slice(0, 10);
+
+  const sql = 'UPDATE tasks SET status = ?, date_update = ? WHERE id = ?';
+  db.run(sql, [status, dateUpdate, id], function (err) {
     if (err) {
       console.error(err.message);
       return res.status(500).send('Internal Server Error');
