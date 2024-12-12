@@ -17,5 +17,3 @@ npm run dev
 ```
 
 3. Open [localhost](http://localhost:5173/)
-
-4. Enjoy the app!
