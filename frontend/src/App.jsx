@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import {normalizePriority} from './scripts/normalizePriority';
+import ServerInfo from './ServerInfo';
 
 function App() {
   const [tasks, setTasks] = useState([]); // Все задачи
@@ -160,7 +161,7 @@ function App() {
       })
       .then((data) => {
         console.log(data.message);
-        setTasks((prevTask) => prevTasks.filter((task) => task.id !== taskId));
+        setTasks((prevTask) => prevTask.filter((task) => task.id !== taskId));
       })
       .catch((error) => {
         console.error('Error deleting task:', error);
@@ -397,6 +398,11 @@ function App() {
           ))
         )}
       </div>
+      <footer>
+        <main>
+          <ServerInfo />
+        </main>
+      </footer>
     </div>
   );
 }

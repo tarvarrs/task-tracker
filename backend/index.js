@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const sqlite3 = require('sqlite3') .verbose();
 const { v4: uuidv4 } = require('uuid');
+const os = require('os');
 
 dotenv.config();
 
@@ -255,4 +256,13 @@ app.post('/tasks', (req, res) => {
 // API listener
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+// getting information about server's OS
+app.get('/server-info', (req, res) => {
+  const serverInfo = {
+    platform: os.platform(),
+    arch: os.arch()
+  };
+  res.json(serverInfo);
 });
