@@ -1,13 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const sqlite3 = require('sqlite3') .verbose();
+const sqlite3 = require('sqlite3').verbose();
 const { v4: uuidv4 } = require('uuid');
 const os = require('os');
+const FilterTasks = require('./FilterTasks')
+const SortTasks = require('./SortTasks')
+const fs = require('fs')
 
 dotenv.config();
 
 const app = express();
+const router = express.Router();
+const db = new sqlite3.Database('../task-tracker.db');
 
 app.use(cors());
 app.use(express.json());
@@ -27,8 +32,8 @@ app.use((req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
-
-const db = new sqlite3.Database('../task-tracker.db');
+app.use('/tasks', FilterTasks);
+app.use('/tasks', SortTasks);
 
 app.get('/', (req, res) => {
   res.send('Backend is running');
@@ -38,104 +43,6 @@ app.get('/', (req, res) => {
 app.get('/tasks', (req, res) => {
   console.log(`[${req.requestId}] Получение списка задач`)
   db.all('SELECT * FROM tasks', (err, rows) => {
-    if (err) {
-      console.error(`[${req.requestId}] Ошибка: ${err.message}`);
-      return res.status(500).send('Internal Server Error');
-    }
-    res.json(rows);
-    console.log(`[${req.requestId}] Успешно`);
-  });
-});
-
-// API for task sorting
-app.get('/tasks/ordered_by_id', (req, res) => {
-  console.log(`[${req.requestId}] Сортировка задач по id`);
-  db.all('SELECT * FROM tasks ORDER BY id', (err, rows) => {
-    if (err) {
-      console.error(`[${req.requestId}] Ошибка: ${err.message}`);
-      return res.status(500).send('Internal Server Error');
-    }
-    res.json(rows);
-    console.log(`[${req.requestId}] Успешно`);
-  });
-});
-
-app.get('/tasks/ordered_by_deadline', (req, res) => {
-  console.log(`[${req.requestId}] Сортировка задач по дедлайну`);
-  db.all('SELECT * FROM tasks ORDER BY date_end', (err, rows) => {
-    if (err) {
-      console.error(`[${req.requestId}] Ошибка: ${err.message}`);
-      return res.status(500).send('Internal Server Error');
-    }
-    res.json(rows);
-    console.log(`[${req.requestId}] Успешно`);
-  });
-});
-
-app.get('/tasks/ordered_by_status', (req, res) => {
-  console.log(`[${req.requestId}] Сортировка задач по статусу`);
-  db.all('SELECT * FROM tasks ORDER BY status', (err, rows) => {
-    if (err) {
-      console.error(`[${req.requestId}] Ошибка: ${err.message}`);
-      return res.status(500).send('Internal Server Error');
-    }
-    res.json(rows);
-    console.log(`[${req.requestId}] Успешно`);
-  });
-});
-
-app.get('/tasks/ordered_by_priority', (req, res) => {
-  console.log(`[${req.requestId}] Сортировка задач по приоритету`);
-  db.all('SELECT * FROM tasks ORDER BY priority', (err, rows) => {
-    if (err) {
-      console.error(`[${req.requestId}] Ошибка: ${err.message}`);
-      return res.status(500).send('Internal Server Error');
-    }
-    res.json(rows);
-    console.log(`[${req.requestId}] Успешно`);
-  });
-});
-
-// API for task filtering
-app.get('/tasks/filtered_all', (req, res) => {
-  console.log(`[${req.requestId}] Фильтрация задач`);
-  db.all('SELECT * FROM tasks', (err, rows) => {
-    if (err) {
-      console.error(`[${req.requestId}] Ошибка: ${err.message}`);
-      return res.status(500).send('Internal Server Error');
-    }
-    res.json(rows);
-    console.log(`[${req.requestId}] Успешно`);
-  });
-});
-
-app.get('/tasks/filtered_pending', (req, res) => {
-  console.log(`[${req.requestId}] Фильтрация задач`);
-  db.all('SELECT * FROM tasks WHERE status = "В ожидании"', (err, rows) => {
-    if (err) {
-      console.error(`[${req.requestId}] Ошибка: ${err.message}`);
-      return res.status(500).send('Internal Server Error');
-    }
-    res.json(rows);
-    console.log(`[${req.requestId}] Успешно`);
-  });
-});
-
-app.get('/tasks/filtered_process', (req, res) => {
-  console.log(`[${req.requestId}] Фильтрация задач`);
-  db.all('SELECT * FROM tasks WHERE status = "В процессе"', (err, rows) => {
-    if (err) {
-      console.error(`[${req.requestId}] Ошибка: ${err.message}`);
-      return res.status(500).send('Internal Server Error');
-    }
-    res.json(rows);
-    console.log(`[${req.requestId}] Успешно`);
-  });
-});
-
-app.get('/tasks/filtered_done', (req, res) => {
-  console.log(`[${req.requestId}] Фильтрация задач`);
-  db.all('SELECT * FROM tasks WHERE status = "Выполнено"', (err, rows) => {
     if (err) {
       console.error(`[${req.requestId}] Ошибка: ${err.message}`);
       return res.status(500).send('Internal Server Error');
@@ -266,3 +173,17 @@ app.get('/server-info', (req, res) => {
   };
   res.json(serverInfo);
 });
+
+app.get('/file-content', (req, res) => {
+  console.log(`[${req.requestId}] Добавление задачи`);
+  const filePath = './files/something.txt';
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error(`[${req.requestId}] Ошибка: ${err.message}`);
+      return res.status(500).json({ error: 'Не удалось прочитать файл' });
+    }
+    res.json({ content: data });
+  });
+});
+
+module.exports = router;

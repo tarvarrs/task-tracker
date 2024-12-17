@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import {normalizePriority} from './scripts/normalizePriority';
 import ServerInfo from './ServerInfo';
+import FileContent from './FileContent';
 
 function App() {
   const [tasks, setTasks] = useState([]); // Все задачи
@@ -401,6 +402,7 @@ function App() {
       <footer>
         <main>
           <ServerInfo />
+          <FileContent />
         </main>
       </footer>
     </div>
